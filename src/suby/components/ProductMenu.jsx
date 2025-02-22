@@ -5,9 +5,7 @@ import TopBar from "./TopBar";
 
 const ProductMenu = () => {
   const [products, setProducts] = useState([]);
-
   const { firmId, firmName } = useParams();
-    
 
   const productHandler = async () => {
     try {
@@ -26,23 +24,50 @@ const ProductMenu = () => {
   return (
     <>
       <TopBar />
-      <section className="productSection">
-        <h3>{firmName}</h3>
-        {products.map((item) => {
-          return (
-            <div className="productBox">
-              <div>
-                <div><strong>{item.productName}</strong></div>
-                <div>₹{item.price}</div>
-                <div>{item.description}</div>
-              </div>
-              <div className="productGroup">
-                <img src={`${API_URL}/uploads/${item.image}`} />
-                <div className="addButton">ADD</div>
+      <section style={{ padding: '20px', maxWidth: '800px', margin: 'auto' }}>
+        <h3 style={{ textAlign: 'center', color: '#333' }}>{firmName}</h3>
+        {products.map((item, index) => (
+          <div 
+            key={index} 
+            style={{ 
+              display: 'flex', 
+              justifyContent: 'space-between', 
+              alignItems: 'center', 
+              padding: '15px', 
+              margin: '10px 0', 
+              border: '1px solid #ddd', 
+              borderRadius: '8px', 
+              boxShadow: '2px 2px 5px rgba(0,0,0,0.1)',
+              backgroundColor: '#fff' 
+            }}
+          >
+            <div>
+              <div style={{ fontWeight: 'bold', fontSize: '18px' }}>{item.productName}</div>
+              <div style={{ color: '#28a745', fontSize: '16px' }}>₹{item.price}</div>
+              <div style={{ color: '#666', fontSize: '14px' }}>{item.description}</div>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <img 
+                src={`${API_URL}/uploads/${item.image}`} 
+                alt={item.productName} 
+                style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '8px' }} 
+              />
+              <div 
+                style={{ 
+                  backgroundColor: '#007bff', 
+                  color: 'white', 
+                  padding: '8px 12px', 
+                  borderRadius: '5px', 
+                  cursor: 'pointer',
+                  textAlign: 'center',
+                  fontSize: '14px'
+                }}
+              >
+                ADD
               </div>
             </div>
-          );
-        })}
+          </div>
+        ))}
       </section>
     </>
   );

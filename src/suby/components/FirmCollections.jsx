@@ -4,69 +4,89 @@ import { Link } from "react-router-dom";
 
 const FirmCollections = () => {
   const [firmData, setFirmData] = useState([]);
-  const [selectedRegion, setSelectedRegion] = useState('All');
-  const [activeCategory, setActiveCategory]= useState('all');
-
-  const firmDataHandler = async () => {
-    try {
-      const response = await fetch(`${API_URL}/vendor/all-vendors`);
-      const newFirmData = await response.json();
-      setFirmData(newFirmData.vendors);
-    } catch (error) {
-      alert("firm data not fetched");
-      console.error("firm data not fetched", error);
-    }
-  };
+  const [selectedRegion, setSelectedRegion] = useState("All");
+  const [activeCategory, setActiveCategory] = useState("all");
 
   useEffect(() => {
-    firmDataHandler();
+    const fetchFirmData = async () => {
+      try {
+        const response = await fetch(`${API_URL}/vendor/all-vendors`);
+        const newFirmData = await response.json();
+        setFirmData(newFirmData.vendors);
+      } catch (error) {
+        console.error("Failed to fetch firm data", error);
+      }
+    };
+    fetchFirmData();
   }, []);
 
-  const filterHandler = (region, category) => {
-    setSelectedRegion(region);
-    setActiveCategory(category)
-  };
-
   return (
-    <>
-      <h3>Restaurants with online food delivery in Hyderabad</h3>
-      <div className="filterButtons">
-        <button onClick={() => filterHandler("All", 'all')} className={activeCategory === 'all' ? 'activeButton': ''}>All</button>
-        <button onClick={() => filterHandler("South-Indian" , 'south-indian')} className={activeCategory === 'south-indian' ? 'activeButton': ''} >South-Indian</button>
-        <button onClick={() => filterHandler("North-Indian", 'north-indian')} className={activeCategory === 'north-indian' ? 'activeButton': ''} >North-Indian</button>
-        <button onClick={() => filterHandler("Chinese", 'chinese')} className={activeCategory === 'chinese' ? 'activeButton': ''} >Chinese</button>
-        <button onClick={() => filterHandler("Bakery", 'bakery')} className={activeCategory === 'bakery' ? 'activeButton': ''} >Bakery</button>
+    <div style={{ padding: "20px", textAlign: "center" }}>
+      <h3 style={{ marginBottom: "20px", fontSize: "22px", color: "#333" }}>
+        Restaurants with Online Food Delivery
+      </h3>
+      <div style={{ marginBottom: "20px" }}>
+        {["All", "South-Indian", "North-Indian", "Chinese", "Bakery"].map((category) => (
+          <button
+            key={category}
+            onClick={() => {
+              setSelectedRegion(category);
+              setActiveCategory(category.toLowerCase());
+            }}
+            style={{
+              padding: "10px 15px",
+              margin: "5px",
+              borderRadius: "5px",
+              border: "none",
+              backgroundColor: activeCategory === category.toLowerCase() ? "#ff5722" : "#ddd",
+              color: activeCategory === category.toLowerCase() ? "#fff" : "#333",
+              cursor: "pointer",
+            }}
+          >
+            {category}
+          </button>
+        ))}
       </div>
-      <section className="firmSection">
-        {firmData.map((apple) => {
-          return apple.firm.map((item)=>{
-            if(selectedRegion === "All" || 
-              item.region.includes(selectedRegion.toLocaleLowerCase())
-            ){
-                return (
-                  <Link to={`/products/${item._id}/${item.firmName}`} className="link" key={item._id}>
-   <div className="zoomEffect">
-   <div className="firmGroupBox">
-                      <div className="firmGroup">
-                        <img src={`${API_URL}/uploads/${item.image}`} alt={item.firmName} />
-                        <div className="firmOffer">{item.offer}</div>
-                      </div>
-                      <div className="firmDetails">
-                        <strong>{item.firmName}</strong>
-                        <br />
-                        <div className="firmArea">{item.region.join(", ")}</div>
-                        <div className="firmArea">{item.area}</div>
-                      </div>
-                    </div>
-   </div>
-                  </Link>
-                );
-            }
-            return null;
-          });
-        })}
+      <section
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+          gap: "15px",
+          padding: "10px",
+        }}
+      >
+        {firmData.map((vendor) =>
+          vendor.firm.map((item) =>
+            selectedRegion === "All" || item.region.includes(selectedRegion.toLowerCase()) ? (
+              <Link
+                to={`/products/${item._id}/${item.firmName}`}
+                key={item._id}
+                style={{ textDecoration: "none", color: "inherit" }}
+              >
+                <div
+                  style={{
+                    boxShadow: "2px 2px 5px rgba(0,0,0,0.1)",
+                    borderRadius: "8px",
+                    padding: "10px",
+                    textAlign: "center",
+                    backgroundColor: "#fff",
+                  }}
+                >
+                  <img
+                    src={`${API_URL}/uploads/${item.image}`}
+                    alt={item.firmName}
+                    style={{ width: "100%", height: "120px", objectFit: "cover", borderRadius: "5px" }}
+                  />
+                  <div style={{ marginTop: "10px", fontWeight: "bold" }}>{item.firmName}</div>
+                  <div style={{ fontSize: "12px", color: "#555" }}>{item.region.join(", ")}</div>
+                  <div style={{ fontSize: "12px", color: "#777" }}>{item.area}</div>
+                </div>
+              </Link>
+            ) : null
+          )
+        )}
       </section>
-    </>
+    </div>
   );
 };
 
